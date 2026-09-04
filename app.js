@@ -52,17 +52,7 @@ function menuShare() {
 
 function menuInstall() {
   closeMenu();
-  setTimeout(() => {
-    if (deferredPrompt) {
-      deferredPrompt.prompt();
-      deferredPrompt.userChoice.then(result => {
-        if (result.outcome === 'accepted') showToast('تم تثبيت التطبيق');
-        deferredPrompt = null;
-      });
-    } else {
-      showToast('استخدم خيار إضافة إلى الشاشة الرئيسية في المتصفح');
-    }
-  }, 300);
+  setTimeout(() => installApp(), 300);
 }
 
 // ===== Navigation =====
@@ -250,13 +240,42 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// ===== Install Banner =====
-let deferredPrompt;
+// ===== Install App =====
+let deferredPrompt = null;
+
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   document.getElementById('installBanner').classList.add('active');
 });
+
+function installApp() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((result) => {
+      if (result.outcome === 'accepted') {
+        showToast('تم تثبيت التطبيق بنجاح');
+      }
+      deferredPrompt = null;
+      document.getElementById('installBanner').classList.remove('active');
+    });
+  } else {
+    // Fallback instructions for manual install
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const isAndroid = /Android/.test(navigator.userAgent);
+    
+    let message = '';
+    if (isIOS) {
+      message = 'اضغط على زر المشاركة ⬆️ ثم "إضافة إلى الشاشة الرئيسية"';
+    } else if (isAndroid) {
+      message = 'اضغط على النقاط الثلاث ⋮ ثم "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية"';
+    } else {
+      message = 'في Chrome: اضغط على النقاط الثلاث ⋮ ثم "تثبيت التطبيق"';
+    }
+    
+    showToast(message);
+  }
+}
 
 function closeInstallBanner() {
   document.getElementById('installBanner').classList.remove('active');
@@ -264,7 +283,15 @@ function closeInstallBanner() {
 
 // ===== Service Worker =====
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js').catch(() => {});
+  navigator.serviceWorker.register('sw.js')
+    .then(reg => {
+      console.log('Service Worker registered:', reg.scope);
+      // Check if app is installable
+      if (reg.installing) {
+        console.log('Service Worker installing');
+      }
+    })
+    .catch(err => console.log('Service Worker error:', err));
 }
 
 // ===== Initialize =====
