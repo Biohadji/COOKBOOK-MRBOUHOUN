@@ -52,7 +52,17 @@ function menuShare() {
 
 function menuInstall() {
   closeMenu();
-  setTimeout(() => installApp(), 300);
+  setTimeout(() => {
+    if (deferredPrompt) {
+      deferredPrompt.prompt();
+      deferredPrompt.userChoice.then(result => {
+        if (result.outcome === 'accepted') showToast('تم تثبيت التطبيق');
+        deferredPrompt = null;
+      });
+    } else {
+      showToast('استخدم خيار إضافة إلى الشاشة الرئيسية في المتصفح');
+    }
+  }, 300);
 }
 
 // ===== Navigation =====
@@ -240,95 +250,13 @@ function showToast(message) {
   setTimeout(() => toast.classList.remove('show'), 2000);
 }
 
-// ===== Install App =====
-let deferredPrompt = null;
-
+// ===== Install Banner =====
+let deferredPrompt;
 window.addEventListener('beforeinstallprompt', (e) => {
   e.preventDefault();
   deferredPrompt = e;
   document.getElementById('installBanner').classList.add('active');
 });
-
-function installApp() {
-  if (deferredPrompt) {
-    deferredPrompt.prompt();
-    deferredPrompt.userChoice.then((result) => {
-      if (result.outcome === 'accepted') {
-        showToast('تم تثبيت التطبيق بنجاح');
-      }
-      deferredPrompt = null;
-      document.getElementById('installBanner').classList.remove('active');
-    });
-  } else {
-    showInstallGuide();
-  }
-}
-
-function showInstallGuide() {
-  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-  const isAndroid = /Android/.test(navigator.userAgent);
-  const isChrome = /Chrome/.test(navigator.userAgent);
-  const isFirefox = /Firefox/.test(navigator.userAgent);
-  
-  let instructions = '';
-  
-  if (isIOS) {
-    instructions = `
-      <div style="margin-bottom:15px;">
-        <strong>للتثبيت على iPhone/iPad:</strong>
-      </div>
-      <div>1️⃣ افتح التطبيق في <strong>Safari</strong></div>
-      <div>2️⃣ اضغط على زر المشاركة <strong>⬆️</strong></div>
-      <div>3️⃣ اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong></div>
-      <div>4️⃣ اضغط <strong>"إضافة"</strong></div>
-    `;
-  } else if (isAndroid) {
-    if (isChrome) {
-      instructions = `
-        <div style="margin-bottom:15px;">
-          <strong>للتثبيت على Android:</strong>
-        </div>
-        <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong> في الأعلى</div>
-        <div>2️⃣ اختر <strong>"تثبيت التطبيق"</strong> أو <strong>"تثبيت"</strong></div>
-        <div>3️⃣ اضغط <strong>"تثبيت"</strong> للتأكيد</div>
-      `;
-    } else if (isFirefox) {
-      instructions = `
-        <div style="margin-bottom:15px;">
-          <strong>للتثبيت على Android:</strong>
-        </div>
-        <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong></div>
-        <div>2️⃣ اختر <strong>"تثبيت"</strong></div>
-        <div>3️⃣ اضغط <strong>"تثبيت"</strong> للتأكيد</div>
-      `;
-    } else {
-      instructions = `
-        <div style="margin-bottom:15px;">
-          <strong>للتثبيت على Android:</strong>
-        </div>
-        <div>1️⃣ افتح التطبيق في متصفح Chrome</div>
-        <div>2️⃣ اضغط على النقاط الثلاث <strong>⋮</strong></div>
-        <div>3️⃣ اختر <strong>"تثبيت التطبيق"</strong></div>
-      `;
-    }
-  } else {
-    instructions = `
-      <div style="margin-bottom:15px;">
-        <strong>للتثبيت على الكمبيوتر:</strong>
-      </div>
-      <div><strong>Chrome/Edge:</strong></div>
-      <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong> في الأعلى</div>
-      <div>2️⃣ اختر <strong>"تثبيت التطبيق"</strong></div>
-      <div style="margin-top:10px;"><strong>Firefox:</strong></div>
-      <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong></div>
-      <div>2️⃣ اختر <strong>"تثبيت"</strong></div>
-    `;
-  }
-  
-  document.getElementById('installInstructions').innerHTML = instructions;
-  document.getElementById('installModal').classList.add('active');
-  document.body.style.overflow = 'hidden';
-}
 
 function closeInstallBanner() {
   document.getElementById('installBanner').classList.remove('active');
@@ -336,9 +264,7 @@ function closeInstallBanner() {
 
 // ===== Service Worker =====
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('sw.js')
-    .then(reg => console.log('Service Worker registered'))
-    .catch(err => console.log('Service Worker error:', err));
+  navigator.serviceWorker.register('sw.js').catch(() => {});
 }
 
 // ===== Initialize =====
