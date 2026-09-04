@@ -260,21 +260,74 @@ function installApp() {
       document.getElementById('installBanner').classList.remove('active');
     });
   } else {
-    // Fallback instructions for manual install
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
-    const isAndroid = /Android/.test(navigator.userAgent);
-    
-    let message = '';
-    if (isIOS) {
-      message = 'اضغط على زر المشاركة ⬆️ ثم "إضافة إلى الشاشة الرئيسية"';
-    } else if (isAndroid) {
-      message = 'اضغط على النقاط الثلاث ⋮ ثم "تثبيت التطبيق" أو "إضافة إلى الشاشة الرئيسية"';
-    } else {
-      message = 'في Chrome: اضغط على النقاط الثلاث ⋮ ثم "تثبيت التطبيق"';
-    }
-    
-    showToast(message);
+    showInstallGuide();
   }
+}
+
+function showInstallGuide() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isAndroid = /Android/.test(navigator.userAgent);
+  const isChrome = /Chrome/.test(navigator.userAgent);
+  const isFirefox = /Firefox/.test(navigator.userAgent);
+  
+  let instructions = '';
+  
+  if (isIOS) {
+    instructions = `
+      <div style="margin-bottom:15px;">
+        <strong>للتثبيت على iPhone/iPad:</strong>
+      </div>
+      <div>1️⃣ افتح التطبيق في <strong>Safari</strong></div>
+      <div>2️⃣ اضغط على زر المشاركة <strong>⬆️</strong></div>
+      <div>3️⃣ اختر <strong>"إضافة إلى الشاشة الرئيسية"</strong></div>
+      <div>4️⃣ اضغط <strong>"إضافة"</strong></div>
+    `;
+  } else if (isAndroid) {
+    if (isChrome) {
+      instructions = `
+        <div style="margin-bottom:15px;">
+          <strong>للتثبيت على Android:</strong>
+        </div>
+        <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong> في الأعلى</div>
+        <div>2️⃣ اختر <strong>"تثبيت التطبيق"</strong> أو <strong>"تثبيت"</strong></div>
+        <div>3️⃣ اضغط <strong>"تثبيت"</strong> للتأكيد</div>
+      `;
+    } else if (isFirefox) {
+      instructions = `
+        <div style="margin-bottom:15px;">
+          <strong>للتثبيت على Android:</strong>
+        </div>
+        <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong></div>
+        <div>2️⃣ اختر <strong>"تثبيت"</strong></div>
+        <div>3️⃣ اضغط <strong>"تثبيت"</strong> للتأكيد</div>
+      `;
+    } else {
+      instructions = `
+        <div style="margin-bottom:15px;">
+          <strong>للتثبيت على Android:</strong>
+        </div>
+        <div>1️⃣ افتح التطبيق في متصفح Chrome</div>
+        <div>2️⃣ اضغط على النقاط الثلاث <strong>⋮</strong></div>
+        <div>3️⃣ اختر <strong>"تثبيت التطبيق"</strong></div>
+      `;
+    }
+  } else {
+    instructions = `
+      <div style="margin-bottom:15px;">
+        <strong>للتثبيت على الكمبيوتر:</strong>
+      </div>
+      <div><strong>Chrome/Edge:</strong></div>
+      <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong> في الأعلى</div>
+      <div>2️⃣ اختر <strong>"تثبيت التطبيق"</strong></div>
+      <div style="margin-top:10px;"><strong>Firefox:</strong></div>
+      <div>1️⃣ اضغط على النقاط الثلاث <strong>⋮</strong></div>
+      <div>2️⃣ اختر <strong>"تثبيت"</strong></div>
+    `;
+  }
+  
+  document.getElementById('installInstructions').innerHTML = instructions;
+  document.getElementById('installModal').classList.add('active');
+  document.body.style.overflow = 'hidden';
 }
 
 function closeInstallBanner() {
@@ -284,13 +337,7 @@ function closeInstallBanner() {
 // ===== Service Worker =====
 if ('serviceWorker' in navigator) {
   navigator.serviceWorker.register('sw.js')
-    .then(reg => {
-      console.log('Service Worker registered:', reg.scope);
-      // Check if app is installable
-      if (reg.installing) {
-        console.log('Service Worker installing');
-      }
-    })
+    .then(reg => console.log('Service Worker registered'))
     .catch(err => console.log('Service Worker error:', err));
 }
 

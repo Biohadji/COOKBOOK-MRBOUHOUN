@@ -553,6 +553,13 @@
       transition: opacity 0.3s;
     }
     .toast.show { opacity: 1; }
+    .modal-content {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      max-width: 350px;
+      text-align: center;
+    }
   </style>
 </head>
 <body>
@@ -686,8 +693,8 @@
     </div>
   </nav>
 
-  <!-- Install Banner -->
-  <div class="install-banner active" id="installBanner">
+  <!-- Install Banner - يظهر فقط عند الخادم -->
+  <div class="install-banner" id="installBanner">
     <div class="install-content">
       <span class="install-icon">📱</span>
       <div class="install-text">
@@ -696,6 +703,19 @@
       </div>
       <button class="install-btn" onclick="installApp()">تنزيل</button>
       <button class="install-close" onclick="closeInstallBanner()">×</button>
+    </div>
+  </div>
+
+  <!-- Install Guide Modal -->
+  <div class="modal" id="installModal">
+    <div style="background:white;border-radius:20px;padding:30px;max-width:350px;text-align:center;">
+      <div style="font-size:60px;margin-bottom:15px;">📱</div>
+      <h3 style="color:var(--primary);margin-bottom:15px;">تنزيل التطبيق</h3>
+      <div id="installInstructions" style="text-align:right;line-height:2;font-size:14px;"></div>
+      <button onclick="document.getElementById('installModal').classList.remove('active')" 
+              style="margin-top:20px;padding:12px 30px;background:var(--primary);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">
+        حسناً
+      </button>
     </div>
   </div>
 
