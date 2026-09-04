@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <meta name="theme-color" content="#6B1C23">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <link rel="manifest" href="manifest.json">
+  <title>أطباق الولائم بلمسة أيام زمان</title>
+  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #6B1C23;
+      --primary-light: #8B2D3A;
+      --gold: #C9A84C;
+      --gold-light: #E8D5A3;
+      --cream: #FFF9F0;
+      --dark: #2C1810;
+      --text: #3D2B1F;
+      --bg: #FDF8F2;
+      --card-bg: #FFFFFF;
+      --shadow: 0 4px 20px rgba(0,0,0,0.1);
+      --menu-width: 280px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Cairo', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      direction: rtl;
+      line-height: 1.6;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* ===== Overlay ===== */
+    .overlay {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.5);
+      z-index: 150;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .overlay.active { display: block; opacity: 1; }
+
+    /* ===== Side Menu ===== */
+    .side-menu {
+      position: fixed;
+      top: 0;
+      right: -300px;
+      width: var(--menu-width);
+      height: 100%;
+      background: white;
+      z-index: 200;
+      transition: right 0.3s ease;
+      overflow-y: auto;
+      box-shadow: -5px 0 30px rgba(0,0,0,0.2);
+    }
+    .side-menu.active { right: 0; }
+
+    .menu-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 25px 20px;
+      text-align: center;
+    }
+    .menu-logo {
+      font-family: 'Amiri', serif;
+      font-size: 24px;
+      margin-bottom: 5px;
+    }
+    .menu-subtitle {
+      font-size: 12px;
+      opacity: 0.8;
+    }
+
+    .menu-section {
+      padding: 15px 0;
+      border-bottom: 1px solid #eee;
+    }
+    .menu-section-title {
+      padding: 0 20px;
+      font-size: 12px;
+      color: #999;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .menu-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 12px 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      color: var(--text);
+    }
+    .menu-item:hover, .menu-item.active {
+      background: var(--cream);
+      color: var(--primary);
+    }
+    .menu-item.active {
+      border-right: 4px solid var(--primary);
+      font-weight: 700;
+    }
+    .menu-icon {
+      width: 35px;
+      height: 35px;
+      background: var(--cream);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+    }
+    .menu-item.active .menu-icon {
+      background: var(--primary);
+      color: white;
+    }
+    .menu-label {
+      font-size: 14px;
+      font-weight: 600;
+    }
+
+    .menu-footer {
+      padding: 20px;
+      text-align: center;
+      font-size: 11px;
+      color: #999;
+    }
+
+    /* ===== Header ===== */
+    .header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 15px 20px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: var(--shadow);
+    }
+    .header-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .menu-toggle {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 24px;
+      cursor: pointer;
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .logo {
+      font-family: 'Amiri', serif;
+      font-size: 20px;
+      font-weight: bold;
+    }
+    .header-actions {
+      display: flex;
+      gap: 10px;
+    }
+    .header-btn {
+      background: rgba(255,255,255,0.2);
+      border: none;
+      color: white;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ===== Search ===== */
+    .search-container {
+      padding: 15px 20px;
+      max-width: 800px;
+      margin: 0 auto;
+    }
+    .search-box {
+      width: 100%;
+      padding: 12px 20px;
+      border: 2px solid var(--gold);
+      border-radius: 25px;
+      font-size: 16px;
+      font-family: 'Cairo', sans-serif;
+      background: white;
+      direction: rtl;
+    }
+    .search-box:focus {
+      outline: none;
+      border-color: var(--primary);
+    }
+
+    /* ===== Categories ===== */
+    .categories {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 20px;
+      gap: 10px;
+      max-width: 800px;
+      margin: 0 auto;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+    .category-btn {
+      flex-shrink: 0;
+      padding: 10px 20px;
+      border: 2px solid var(--gold);
+      border-radius: 20px;
+      background: white;
+      color: var(--text);
+      font-family: 'Cairo', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .category-btn.active {
+      background: var(--primary);
+      color: white;
+      border-color: var(--primary);
+    }
+
+    /* ===== Chapters ===== */
+    .chapters-nav {
+      display: flex;
+      overflow-x: auto;
+      padding: 10px 20px;
+      gap: 8px;
+      max-width: 800px;
+      margin: 0 auto;
+      scrollbar-width: none;
+    }
+    .chapters-nav::-webkit-scrollbar { display: none; }
+    .chapter-btn {
+      flex-shrink: 0;
+      padding: 8px 16px;
+      border: 2px solid var(--primary);
+      border-radius: 15px;
+      background: white;
+      color: var(--primary);
+      font-family: 'Cairo', sans-serif;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    .chapter-btn.active {
+      background: var(--primary);
+      color: white;
+    }
+
+    /* ===== Content ===== */
+    .content {
+      max-width: 800px;
+      margin: 0 auto;
+      padding: 10px 20px 100px;
+    }
+
+    /* ===== Chapter Header ===== */
+    .chapter-header {
+      display: flex;
+      align-items: center;
+      gap: 15px;
+      margin: 25px 0 15px;
+      padding-bottom: 10px;
+      border-bottom: 3px solid var(--gold);
+    }
+    .chapter-num {
+      width: 40px;
+      height: 40px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      font-weight: bold;
+    }
+    .chapter-header h2 {
+      font-family: 'Amiri', serif;
+      font-size: 22px;
+      color: var(--primary);
+    }
+
+    /* ===== Recipe Card ===== */
+    .recipe-card {
+      background: var(--card-bg);
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      margin-bottom: 20px;
+      overflow: hidden;
+    }
+    .recipe-image {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      cursor: pointer;
+    }
+    .recipe-content { padding: 15px; }
+    .recipe-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+    }
+    .recipe-title {
+      font-family: 'Amiri', serif;
+      font-size: 20px;
+      color: var(--primary);
+      flex: 1;
+    }
+    .recipe-badge {
+      background: var(--gold);
+      color: white;
+      padding: 4px 12px;
+      border-radius: 15px;
+      font-size: 12px;
+      font-weight: 600;
+    }
+    .recipe-meta {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 15px;
+      flex-wrap: wrap;
+    }
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      color: #666;
+    }
+    .recipe-description {
+      font-size: 14px;
+      color: #555;
+      margin-bottom: 15px;
+    }
+
+    /* ===== Ingredients ===== */
+    .ingredients-section {
+      background: #FAFAF7;
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 15px;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 10px;
+    }
+    .ingredient-item {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px dashed #E0D8CC;
+    }
+    .ingredient-item:last-child { border-bottom: none; }
+    .ingredient-name { font-weight: 600; }
+    .ingredient-amount { color: var(--primary); font-weight: 600; }
+
+    /* ===== Steps ===== */
+    .step-item {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .step-number {
+      width: 28px;
+      height: 28px;
+      background: var(--primary);
+      color: white;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: bold;
+      flex-shrink: 0;
+    }
+    .step-text {
+      flex: 1;
+      font-size: 14px;
+      background: #FAFAF7;
+      padding: 10px 15px;
+      border-radius: 8px;
+      border-right: 3px solid var(--gold);
+    }
+
+    /* ===== Tip Box ===== */
+    .tip-box {
+      background: #FFF8E1;
+      border-right: 4px solid var(--gold);
+      padding: 12px 15px;
+      border-radius: 8px;
+      margin: 15px 0;
+      font-size: 13px;
+    }
+
+    /* ===== Action Buttons ===== */
+    .action-buttons {
+      display: flex;
+      gap: 10px;
+      margin-top: 15px;
+    }
+    .action-btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      font-family: 'Cairo', sans-serif;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn-favorite { background: #FFF0F0; color: #E74C3C; }
+    .btn-favorite.active { background: #E74C3C; color: white; }
+    .btn-share { background: var(--gold-light); color: var(--dark); }
+
+    /* ===== Bottom Nav ===== */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background: white;
+      display: flex;
+      justify-content: space-around;
+      padding: 10px 0;
+      box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
+      z-index: 100;
+    }
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+      padding: 5px 15px;
+      border-radius: 10px;
+      transition: all 0.3s;
+    }
+    .nav-item.active {
+      background: var(--primary);
+      color: white;
+    }
+    .nav-icon { font-size: 22px; }
+    .nav-label { font-size: 11px; font-weight: 600; }
+
+    /* ===== Modal ===== */
+    .modal {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0,0,0,0.95);
+      z-index: 300;
+      justify-content: center;
+      align-items: center;
+    }
+    .modal.active { display: flex; }
+    .modal img {
+      max-width: 95%;
+      max-height: 90vh;
+      object-fit: contain;
+    }
+    .modal-close {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: white;
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    /* ===== Install Banner ===== */
+    .install-banner {
+      display: none;
+      position: fixed;
+      bottom: 80px;
+      left: 10px;
+      right: 10px;
+      background: linear-gradient(135deg, var(--primary), var(--primary-light));
+      color: white;
+      padding: 15px 20px;
+      border-radius: 15px;
+      box-shadow: var(--shadow);
+      z-index: 99;
+    }
+    .install-banner.active { display: block; }
+    .install-content { display: flex; align-items: center; gap: 15px; }
+    .install-icon { font-size: 40px; }
+    .install-text { flex: 1; }
+    .install-title { font-weight: 700; }
+    .install-subtitle { font-size: 12px; opacity: 0.9; }
+    .install-btn {
+      background: var(--gold);
+      border: none;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-family: 'Cairo', sans-serif;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .install-close {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    /* ===== Toast ===== */
+    .toast {
+      position: fixed;
+      bottom: 100px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--dark);
+      color: white;
+      padding: 12px 25px;
+      border-radius: 25px;
+      font-size: 14px;
+      z-index: 400;
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+    .toast.show { opacity: 1; }
+  </style>
+</head>
+<body>
+  <!-- Overlay -->
+  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
+
+  <!-- Side Menu -->
+  <aside class="side-menu" id="sideMenu">
+    <div class="menu-header">
+      <div class="menu-logo">🍽 أطباق الولائم</div>
+      <div class="menu-subtitle">بلمسة أيام زمان</div>
+    </div>
+    <div class="menu-section">
+      <div class="menu-section-title">الرئيسية</div>
+      <div class="menu-item active" onclick="menuNavigate('home')">
+        <div class="menu-icon">🏠</div>
+        <span class="menu-label">الصفحة الرئيسية</span>
+      </div>
+      <div class="menu-item" onclick="menuNavigate('favorites')">
+        <div class="menu-icon">❤️</div>
+        <span class="menu-label">المفضلة</span>
+      </div>
+    </div>
+    <div class="menu-section">
+      <div class="menu-section-title">الفصول</div>
+      <div class="menu-item" onclick="menuChapter(1)">
+        <div class="menu-icon">🌿</div>
+        <span class="menu-label">التوابل والخلطات</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(2)">
+        <div class="menu-icon">🍚</div>
+        <span class="menu-label">أطباق الكسكسي</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(3)">
+        <div class="menu-icon">🥘</div>
+        <span class="menu-label">أطباق الطاجين</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(4)">
+        <div class="menu-icon">🍖</div>
+        <span class="menu-label">اللحوم والدواجن</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(5)">
+        <div class="menu-icon">🥣</div>
+        <span class="menu-label">الشوربات</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(6)">
+        <div class="menu-icon">🥗</div>
+        <span class="menu-label">السلط</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(7)">
+        <div class="menu-icon">🧁</div>
+        <span class="menu-label">الحلويات</span>
+      </div>
+      <div class="menu-item" onclick="menuChapter(8)">
+        <div class="menu-icon">☕</div>
+        <span class="menu-label">المشروبات</span>
+      </div>
+    </div>
+    <div class="menu-section">
+      <div class="menu-section-title">أخرى</div>
+      <div class="menu-item" onclick="menuNavigate('about')">
+        <div class="menu-icon">📖</div>
+        <span class="menu-label">عن الكتاب</span>
+      </div>
+      <div class="menu-item" onclick="menuShare()">
+        <div class="menu-icon">📤</div>
+        <span class="menu-label">مشاركة التطبيق</span>
+      </div>
+      <div class="menu-item" onclick="menuInstall()">
+        <div class="menu-icon">📥</div>
+        <span class="menu-label">تنزيل التطبيق</span>
+      </div>
+    </div>
+    <div class="menu-footer">
+      <p>المؤلف: السيد بهون بن ح محمد أسماوي</p>
+      <p>جميع المقادير لـ 5 أشخاص (تقيميت)</p>
+    </div>
+  </aside>
+
+  <!-- Header -->
+  <header class="header">
+    <div class="header-content">
+      <button class="menu-toggle" onclick="openMenu()">☰</button>
+      <div class="logo">🍽 أطباق الولائم</div>
+      <div class="header-actions">
+        <button class="header-btn" onclick="menuShare()">📤</button>
+        <button class="header-btn" onclick="menuInstall()">📥</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Search -->
+  <div class="search-container">
+    <input type="text" class="search-box" placeholder="🔍 ابحث عن طبق أو مكون..." id="searchInput" oninput="filterRecipes()">
+  </div>
+
+  <!-- Categories -->
+  <div class="categories" id="categories">
+    <button class="category-btn active" onclick="filterByCategory('all')">الكل</button>
+    <button class="category-btn" onclick="filterByCategory('spices')">🌿 التوابل</button>
+    <button class="category-btn" onclick="filterByCategory('couscous')">🍚 الكسكسي</button>
+    <button class="category-btn" onclick="filterByCategory('tagine')">🥘 الطاجين</button>
+    <button class="category-btn" onclick="filterByCategory('meat')">🍖 اللحوم</button>
+    <button class="category-btn" onclick="filterByCategory('poultry')">🍗 الدواجن</button>
+    <button class="category-btn" onclick="filterByCategory('soup')">🥣 الشوربات</button>
+    <button class="category-btn" onclick="filterByCategory('salad')">🥗 السلط</button>
+    <button class="category-btn" onclick="filterByCategory('sweets')">🧁 الحلويات</button>
+    <button class="category-btn" onclick="filterByCategory('drinks')">☕ المشروبات</button>
+  </div>
+
+  <!-- Content -->
+  <main class="content" id="mainContent"></main>
+
+  <!-- Bottom Nav -->
+  <nav class="bottom-nav">
+    <div class="nav-item active" onclick="navSection('home')">
+      <span class="nav-icon">🏠</span>
+      <span class="nav-label">الرئيسية</span>
+    </div>
+    <div class="nav-item" onclick="navSection('chapters')">
+      <span class="nav-icon">📚</span>
+      <span class="nav-label">الفصول</span>
+    </div>
+    <div class="nav-item" onclick="navSection('favorites')">
+      <span class="nav-icon">❤️</span>
+      <span class="nav-label">المفضلة</span>
+    </div>
+    <div class="nav-item" onclick="navSection('about')">
+      <span class="nav-icon">📖</span>
+      <span class="nav-label">عن الكتاب</span>
+    </div>
+  </nav>
+
+  <!-- Install Banner -->
+  <div class="install-banner" id="installBanner">
+    <div class="install-content">
+      <span class="install-icon">📱</span>
+      <div class="install-text">
+        <div class="install-title">تنزيل التطبيق</div>
+        <div class="install-subtitle">أضف التطبيق إلى شاشة هاتفك</div>
+      </div>
+      <button class="install-btn" onclick="installApp()">تنزيل</button>
+      <button class="install-close" onclick="closeInstallBanner()">×</button>
+    </div>
+  </div>
+
+  <!-- Modal -->
+  <div class="modal" id="imageModal">
+    <button class="modal-close" onclick="closeModal()">×</button>
+    <img id="modalImage" src="" alt="">
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script src="data.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
