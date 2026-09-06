@@ -236,34 +236,6 @@
       border-color: var(--primary);
     }
 
-    /* ===== Chapters ===== */
-    .chapters-nav {
-      display: flex;
-      overflow-x: auto;
-      padding: 10px 20px;
-      gap: 8px;
-      max-width: 800px;
-      margin: 0 auto;
-      scrollbar-width: none;
-    }
-    .chapters-nav::-webkit-scrollbar { display: none; }
-    .chapter-btn {
-      flex-shrink: 0;
-      padding: 8px 16px;
-      border: 2px solid var(--primary);
-      border-radius: 15px;
-      background: white;
-      color: var(--primary);
-      font-family: 'Cairo', sans-serif;
-      font-size: 12px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .chapter-btn.active {
-      background: var(--primary);
-      color: white;
-    }
-
     /* ===== Content ===== */
     .content {
       max-width: 800px;
@@ -577,38 +549,18 @@
       </div>
     </div>
     <div class="menu-section">
-      <div class="menu-section-title">الفصول</div>
+      <div class="menu-section-title">الأقسام</div>
       <div class="menu-item" onclick="menuChapter(1)">
-        <div class="menu-icon">🌿</div>
-        <span class="menu-label">التوابل والخلطات</span>
+        <div class="menu-icon">🥗</div>
+        <span class="menu-label">السلطة ولواحقها</span>
       </div>
       <div class="menu-item" onclick="menuChapter(2)">
-        <div class="menu-icon">🍚</div>
-        <span class="menu-label">أطباق الكسكسي</span>
+        <div class="menu-icon">🧁</div>
+        <span class="menu-label">الحلويات التقليدية</span>
       </div>
       <div class="menu-item" onclick="menuChapter(3)">
-        <div class="menu-icon">🥘</div>
-        <span class="menu-label">أطباق الطاجين</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(4)">
-        <div class="menu-icon">🍖</div>
-        <span class="menu-label">اللحوم والدواجن</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(5)">
-        <div class="menu-icon">🥣</div>
-        <span class="menu-label">الشوربات</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(6)">
-        <div class="menu-icon">🥗</div>
-        <span class="menu-label">السلط</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(7)">
-        <div class="menu-icon">🧁</div>
-        <span class="menu-label">الحلويات</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(8)">
         <div class="menu-icon">☕</div>
-        <span class="menu-label">المشروبات</span>
+        <span class="menu-label">المشروبات التقليدية</span>
       </div>
     </div>
     <div class="menu-section">
@@ -628,7 +580,7 @@
     </div>
     <div class="menu-footer">
       <p>المؤلف: السيد بهون بن ح محمد أسماوي</p>
-      <p>جميع المقادير لـ 5 أشخاص (تقيميت)</p>
+      <p>جميع المقادير تُقدم للمجموعات (تقيميت)</p>
     </div>
   </aside>
 
@@ -652,13 +604,7 @@
   <!-- Categories -->
   <div class="categories" id="categories">
     <button class="category-btn active" onclick="filterByCategory('all')">الكل</button>
-    <button class="category-btn" onclick="filterByCategory('spices')">🌿 التوابل</button>
-    <button class="category-btn" onclick="filterByCategory('couscous')">🍚 الكسكسي</button>
-    <button class="category-btn" onclick="filterByCategory('tagine')">🥘 الطاجين</button>
-    <button class="category-btn" onclick="filterByCategory('meat')">🍖 اللحوم</button>
-    <button class="category-btn" onclick="filterByCategory('poultry')">🍗 الدواجن</button>
-    <button class="category-btn" onclick="filterByCategory('soup')">🥣 الشوربات</button>
-    <button class="category-btn" onclick="filterByCategory('salad')">🥗 السلط</button>
+    <button class="category-btn" onclick="filterByCategory('salad')">🥗 السلطة</button>
     <button class="category-btn" onclick="filterByCategory('sweets')">🧁 الحلويات</button>
     <button class="category-btn" onclick="filterByCategory('drinks')">☕ المشروبات</button>
   </div>
@@ -674,7 +620,7 @@
     </div>
     <div class="nav-item" onclick="navSection('chapters')">
       <span class="nav-icon">📚</span>
-      <span class="nav-label">الفصول</span>
+      <span class="nav-label">الأقسام</span>
     </div>
     <div class="nav-item" onclick="navSection('favorites')">
       <span class="nav-icon">❤️</span>
@@ -696,6 +642,19 @@
       </div>
       <button class="install-btn" onclick="installApp()">تنزيل</button>
       <button class="install-close" onclick="closeInstallBanner()">×</button>
+    </div>
+  </div>
+
+  <!-- Install Guide Modal -->
+  <div class="modal" id="installModal">
+    <div style="background:white;border-radius:20px;padding:30px;max-width:350px;text-align:center;">
+      <div style="font-size:60px;margin-bottom:15px;">📱</div>
+      <h3 style="color:var(--primary);margin-bottom:15px;">تنزيل التطبيق</h3>
+      <div id="installInstructions" style="text-align:right;line-height:2;font-size:14px;"></div>
+      <button onclick="document.getElementById('installModal').classList.remove('active')" 
+              style="margin-top:20px;padding:12px 30px;background:var(--primary);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">
+        حسناً
+      </button>
     </div>
   </div>
 
