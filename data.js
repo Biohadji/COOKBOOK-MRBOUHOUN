@@ -10,7 +10,7 @@ const recipes = [
     persons: "3 مجموعات (تقيميت)",
     time: "20 دقيقة",
     difficulty: "سهل",
-    image: "https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=800",
+    image: "https://images.unsplash.com/photo-1540420773420-3366772f4999?w=800",
     description: "سلطة تقليدية للولائم بالأوراق الخضراء والطماطم - كمية تكفي 3 مجموعات (تقيميت)",
     ingredients: [
       { name: "سلاطة (خس)", amount: "1 كغ" },
@@ -41,7 +41,7 @@ const recipes = [
     persons: "5 أشخاص (تقيميت)",
     time: "3 ساعات",
     difficulty: "صعب",
-    image: "https://images.unsplash.com/photo-1519915028121-7d3463d20b13?w=800",
+    image: "https://images.unsplash.com/photo-1548848221-0c2e497ed557?w=800",
     description: "بقلاوة تقليدية بالمكسرات والعسل - كمية لـ 5 أشخاص",
     ingredients: [
       { name: "دقيق", amount: "250 غ" },
@@ -69,7 +69,7 @@ const recipes = [
     persons: "5 أشخاص (تقيميت)",
     time: "ساعة",
     difficulty: "متوسط",
-    image: "https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=800",
+    image: "https://images.unsplash.com/photo-1558303542-8e1a1b42aba4?w=800",
     description: "كعك تقليدي محشو بالتمر والمكسرات - كمية لـ 5 أشخاص",
     ingredients: [
       { name: "دقيق", amount: "300 غ" },
@@ -101,7 +101,7 @@ const recipes = [
     persons: "5 أكواب",
     time: "10 دقائق",
     difficulty: "سهل",
-    image: "https://images.unsplash.com/photo-1556679343-c7306c1976bc?w=800",
+    image: "https://images.unsplash.com/photo-1571934811356-5cc061b6201f?w=800",
     description: "الشاي التقليدي الجزائري بالأعشاب الخمسة - كمية لـ 5 أكواب",
     ingredients: [
       { name: "سرغين", amount: "ملعقة كبيرة" },
@@ -130,7 +130,7 @@ const recipes = [
     persons: "5 أكواب",
     time: "15 دقيقة",
     difficulty: "سهل",
-    image: "https://images.unsplash.com/photo-1571934811356-5cc061b6201f?w=800",
+    image: "https://images.unsplash.com/photo-1572490122747-3968b75cc699?w=800",
     description: "مشروب تقليدي من غرداية بالحليب والتمر والمكسرات - كمية لـ 5 أكواب",
     ingredients: [
       { name: "حليب كامل الدسم", amount: "1 لتر" },
