@@ -172,12 +172,56 @@
             overflow: hidden;
             position: relative;
             box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+            background: linear-gradient(135deg, #D4A574 0%, #C49464 50%, #B48454 100%);
         }
         
         .hero-image img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+        }
+        
+        .hero-image-placeholder {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #87CEEB 0%, #E8D4B8 100%);
+        }
+        
+        .hero-image-placeholder .buildings {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            margin-bottom: 20px;
+        }
+        
+        .hero-image-placeholder .building {
+            background: #C49464;
+            border-radius: 3px;
+        }
+        
+        .hero-image-placeholder .minaret {
+            background: #B48454;
+            border-radius: 3px 3px 0 0;
+        }
+        
+        .hero-image-placeholder .palm {
+            font-size: 40px;
+            margin: 0 15px;
+        }
+        
+        .hero-image-placeholder .ground {
+            width: 100%;
+            height: 80px;
+            background: linear-gradient(180deg, #D4B896 0%, #B8906A 100%);
+            position: absolute;
+            bottom: 0;
         }
         
         .hero-overlay {
@@ -555,7 +599,18 @@
         <div class="content-section active" id="home">
             <div class="cover-section">
                 <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1548018560-c7196e4f220b?w=900&h=400&fit=crop" alt="قصبة جزائرية تقليدية">
+                    <img src="https://images.unsplash.com/photo-1548018560-c7196e4f220b?w=900&h=400&fit=crop" alt="قصبة جزائرية تقليدية" onerror="this.style.display='none';document.getElementById('heroPlaceholder').style.display='flex';">
+                    <div class="hero-image-placeholder" id="heroPlaceholder" style="display:none;">
+                        <div class="buildings">
+                            <div class="building" style="width:40px;height:80px;"></div>
+                            <div class="building" style="width:35px;height:100px;"></div>
+                            <div class="minaret" style="width:25px;height:120px;"></div>
+                            <div class="building" style="width:45px;height:90px;"></div>
+                            <div class="building" style="width:30px;height:70px;"></div>
+                        </div>
+                        <div class="palm">🌴</div>
+                        <div class="ground"></div>
+                    </div>
                     <div class="hero-overlay">
                         <h1>أطباق الولائم بلمسة أيام زمان</h1>
                     </div>
