@@ -1,72 +1,26 @@
-const CACHE_NAME = 'cookbook-v2';
-const urlsToCache = [
-    './',
-    './أطباق_الولائم.html',
-    './manifest.json',
-    './sw.js'
-];
+const CACHE_NAME = 'cookbook-v3';
+const urlsToCache = ['/', '/index.html', '/manifest.json', '/icon.svg'];
 
-// Install event
-self.addEventListener('install', event => {
-    event.waitUntil(
-        caches.open(CACHE_NAME)
-            .then(cache => {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
-            })
-    );
-    self.skipWaiting();
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(urlsToCache)));
+  self.skipWaiting();
 });
 
-// Activate event
-self.addEventListener('activate', event => {
-    event.waitUntil(
-        caches.keys().then(cacheNames => {
-            return Promise.all(
-                cacheNames.map(cacheName => {
-                    if (cacheName !== CACHE_NAME) {
-                        console.log('Deleting old cache:', cacheName);
-                        return caches.delete(cacheName);
-                    }
-                })
-            );
-        })
-    );
-    self.clients.claim();
+self.addEventListener('activate', e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.filter(k => k !== CACHE_NAME).map(k => caches.delete(k)))
+    )
+  );
+  self.clients.claim();
 });
 
-// Fetch event
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                // Cache hit - return response
-                if (response) {
-                    return response;
-                }
-                return fetch(event.request).then(response => {
-                    // Check if valid response
-                    if (!response || response.status !== 200 || response.type !== 'basic') {
-                        return response;
-                    }
-                    // Clone the response
-                    const responseToCache = response.clone();
-                    caches.open(CACHE_NAME)
-                        .then(cache => {
-                            cache.put(event.request, responseToCache);
-                        });
-                    return response;
-                });
-            })
-    );
-});
-
-// Handle offline
-self.addEventListener('fetch', event => {
-    event.respondWith(
-        caches.match(event.request)
-            .then(response => {
-                return response || new Response('Offline content available');
-            })
-    );
+self.addEventListener('fetch', e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request).then(resp => {
+      const clone = resp.clone();
+      caches.open(CACHE_NAME).then(c => c.put(e.request, clone));
+      return resp;
+    })).catch(() => caches.match('/index.html'))
+  );
 });
