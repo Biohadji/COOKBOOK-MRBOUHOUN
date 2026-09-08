@@ -1,673 +1,933 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <meta name="theme-color" content="#6B1C23">
-  <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-  <link rel="manifest" href="manifest.json">
-  <title>أطباق الولائم بلمسة أيام زمان</title>
-  <link href="https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800;900&display=swap" rel="stylesheet">
-  <style>
-    :root {
-      --primary: #6B1C23;
-      --primary-light: #8B2D3A;
-      --gold: #C9A84C;
-      --gold-light: #E8D5A3;
-      --cream: #FFF9F0;
-      --dark: #2C1810;
-      --text: #3D2B1F;
-      --bg: #FDF8F2;
-      --card-bg: #FFFFFF;
-      --shadow: 0 4px 20px rgba(0,0,0,0.1);
-      --menu-width: 280px;
-    }
-    * { margin: 0; padding: 0; box-sizing: border-box; }
-    body {
-      font-family: 'Cairo', sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      direction: rtl;
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ===== Overlay ===== */
-    .overlay {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.5);
-      z-index: 150;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .overlay.active { display: block; opacity: 1; }
-
-    /* ===== Side Menu ===== */
-    .side-menu {
-      position: fixed;
-      top: 0;
-      right: -300px;
-      width: var(--menu-width);
-      height: 100%;
-      background: white;
-      z-index: 200;
-      transition: right 0.3s ease;
-      overflow-y: auto;
-      box-shadow: -5px 0 30px rgba(0,0,0,0.2);
-    }
-    .side-menu.active { right: 0; }
-
-    .menu-header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 25px 20px;
-      text-align: center;
-    }
-    .menu-logo {
-      font-family: 'Amiri', serif;
-      font-size: 24px;
-      margin-bottom: 5px;
-    }
-    .menu-subtitle {
-      font-size: 12px;
-      opacity: 0.8;
-    }
-
-    .menu-section {
-      padding: 15px 0;
-      border-bottom: 1px solid #eee;
-    }
-    .menu-section-title {
-      padding: 0 20px;
-      font-size: 12px;
-      color: #999;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    .menu-item {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      padding: 12px 20px;
-      cursor: pointer;
-      transition: all 0.2s;
-      color: var(--text);
-    }
-    .menu-item:hover, .menu-item.active {
-      background: var(--cream);
-      color: var(--primary);
-    }
-    .menu-item.active {
-      border-right: 4px solid var(--primary);
-      font-weight: 700;
-    }
-    .menu-icon {
-      width: 35px;
-      height: 35px;
-      background: var(--cream);
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-    }
-    .menu-item.active .menu-icon {
-      background: var(--primary);
-      color: white;
-    }
-    .menu-label {
-      font-size: 14px;
-      font-weight: 600;
-    }
-
-    .menu-footer {
-      padding: 20px;
-      text-align: center;
-      font-size: 11px;
-      color: #999;
-    }
-
-    /* ===== Header ===== */
-    .header {
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 15px 20px;
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      box-shadow: var(--shadow);
-    }
-    .header-content {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .menu-toggle {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 24px;
-      cursor: pointer;
-      width: 40px;
-      height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .logo {
-      font-family: 'Amiri', serif;
-      font-size: 20px;
-      font-weight: bold;
-    }
-    .header-actions {
-      display: flex;
-      gap: 10px;
-    }
-    .header-btn {
-      background: rgba(255,255,255,0.2);
-      border: none;
-      color: white;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      font-size: 18px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* ===== Search ===== */
-    .search-container {
-      padding: 15px 20px;
-      max-width: 800px;
-      margin: 0 auto;
-    }
-    .search-box {
-      width: 100%;
-      padding: 12px 20px;
-      border: 2px solid var(--gold);
-      border-radius: 25px;
-      font-size: 16px;
-      font-family: 'Cairo', sans-serif;
-      background: white;
-      direction: rtl;
-    }
-    .search-box:focus {
-      outline: none;
-      border-color: var(--primary);
-    }
-
-    /* ===== Categories ===== */
-    .categories {
-      display: flex;
-      overflow-x: auto;
-      padding: 10px 20px;
-      gap: 10px;
-      max-width: 800px;
-      margin: 0 auto;
-      scrollbar-width: none;
-    }
-    .categories::-webkit-scrollbar { display: none; }
-    .category-btn {
-      flex-shrink: 0;
-      padding: 10px 20px;
-      border: 2px solid var(--gold);
-      border-radius: 20px;
-      background: white;
-      color: var(--text);
-      font-family: 'Cairo', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-    .category-btn.active {
-      background: var(--primary);
-      color: white;
-      border-color: var(--primary);
-    }
-
-    /* ===== Content ===== */
-    .content {
-      max-width: 800px;
-      margin: 0 auto;
-      padding: 10px 20px 100px;
-    }
-
-    /* ===== Chapter Header ===== */
-    .chapter-header {
-      display: flex;
-      align-items: center;
-      gap: 15px;
-      margin: 25px 0 15px;
-      padding-bottom: 10px;
-      border-bottom: 3px solid var(--gold);
-    }
-    .chapter-num {
-      width: 40px;
-      height: 40px;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      font-weight: bold;
-    }
-    .chapter-header h2 {
-      font-family: 'Amiri', serif;
-      font-size: 22px;
-      color: var(--primary);
-    }
-
-    /* ===== Recipe Card ===== */
-    .recipe-card {
-      background: var(--card-bg);
-      border-radius: 15px;
-      box-shadow: var(--shadow);
-      margin-bottom: 20px;
-      overflow: hidden;
-    }
-    .recipe-image {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      cursor: pointer;
-    }
-    .recipe-content { padding: 15px; }
-    .recipe-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      margin-bottom: 10px;
-    }
-    .recipe-title {
-      font-family: 'Amiri', serif;
-      font-size: 20px;
-      color: var(--primary);
-      flex: 1;
-    }
-    .recipe-badge {
-      background: var(--gold);
-      color: white;
-      padding: 4px 12px;
-      border-radius: 15px;
-      font-size: 12px;
-      font-weight: 600;
-    }
-    .recipe-meta {
-      display: flex;
-      gap: 15px;
-      margin-bottom: 15px;
-      flex-wrap: wrap;
-    }
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      color: #666;
-    }
-    .recipe-description {
-      font-size: 14px;
-      color: #555;
-      margin-bottom: 15px;
-    }
-
-    /* ===== Ingredients ===== */
-    .ingredients-section {
-      background: #FAFAF7;
-      border-radius: 10px;
-      padding: 15px;
-      margin-bottom: 15px;
-    }
-    .section-title {
-      font-size: 16px;
-      font-weight: 700;
-      color: var(--primary);
-      margin-bottom: 10px;
-    }
-    .ingredient-item {
-      display: flex;
-      justify-content: space-between;
-      padding: 8px 0;
-      border-bottom: 1px dashed #E0D8CC;
-    }
-    .ingredient-item:last-child { border-bottom: none; }
-    .ingredient-name { font-weight: 600; }
-    .ingredient-amount { color: var(--primary); font-weight: 600; }
-
-    /* ===== Steps ===== */
-    .step-item {
-      display: flex;
-      gap: 12px;
-      margin-bottom: 12px;
-    }
-    .step-number {
-      width: 28px;
-      height: 28px;
-      background: var(--primary);
-      color: white;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: bold;
-      flex-shrink: 0;
-    }
-    .step-text {
-      flex: 1;
-      font-size: 14px;
-      background: #FAFAF7;
-      padding: 10px 15px;
-      border-radius: 8px;
-      border-right: 3px solid var(--gold);
-    }
-
-    /* ===== Tip Box ===== */
-    .tip-box {
-      background: #FFF8E1;
-      border-right: 4px solid var(--gold);
-      padding: 12px 15px;
-      border-radius: 8px;
-      margin: 15px 0;
-      font-size: 13px;
-    }
-
-    /* ===== Action Buttons ===== */
-    .action-buttons {
-      display: flex;
-      gap: 10px;
-      margin-top: 15px;
-    }
-    .action-btn {
-      flex: 1;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      font-family: 'Cairo', sans-serif;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 8px;
-    }
-    .btn-favorite { background: #FFF0F0; color: #E74C3C; }
-    .btn-favorite.active { background: #E74C3C; color: white; }
-    .btn-share { background: var(--gold-light); color: var(--dark); }
-
-    /* ===== Bottom Nav ===== */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      background: white;
-      display: flex;
-      justify-content: space-around;
-      padding: 10px 0;
-      box-shadow: 0 -2px 20px rgba(0,0,0,0.1);
-      z-index: 100;
-    }
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      cursor: pointer;
-      padding: 5px 15px;
-      border-radius: 10px;
-      transition: all 0.3s;
-    }
-    .nav-item.active {
-      background: var(--primary);
-      color: white;
-    }
-    .nav-icon { font-size: 22px; }
-    .nav-label { font-size: 11px; font-weight: 600; }
-
-    /* ===== Modal ===== */
-    .modal {
-      display: none;
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0,0,0,0.95);
-      z-index: 300;
-      justify-content: center;
-      align-items: center;
-    }
-    .modal.active { display: flex; }
-    .modal img {
-      max-width: 95%;
-      max-height: 90vh;
-      object-fit: contain;
-    }
-    .modal-close {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: white;
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      font-size: 24px;
-      cursor: pointer;
-    }
-
-    /* ===== Install Banner ===== */
-    .install-banner {
-      display: none;
-      position: fixed;
-      bottom: 80px;
-      left: 10px;
-      right: 10px;
-      background: linear-gradient(135deg, var(--primary), var(--primary-light));
-      color: white;
-      padding: 15px 20px;
-      border-radius: 15px;
-      box-shadow: var(--shadow);
-      z-index: 99;
-    }
-    .install-banner.active { display: block; }
-    .install-content { display: flex; align-items: center; gap: 15px; }
-    .install-icon { font-size: 40px; }
-    .install-text { flex: 1; }
-    .install-title { font-weight: 700; }
-    .install-subtitle { font-size: 12px; opacity: 0.9; }
-    .install-btn {
-      background: var(--gold);
-      border: none;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 20px;
-      font-family: 'Cairo', sans-serif;
-      font-weight: 700;
-      cursor: pointer;
-    }
-    .install-close {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 20px;
-      cursor: pointer;
-    }
-
-    /* ===== Toast ===== */
-    .toast {
-      position: fixed;
-      bottom: 100px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: var(--dark);
-      color: white;
-      padding: 12px 25px;
-      border-radius: 25px;
-      font-size: 14px;
-      z-index: 400;
-      opacity: 0;
-      transition: opacity 0.3s;
-    }
-    .toast.show { opacity: 1; }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="theme-color" content="#006233">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="الولائم">
+    <meta name="description" content="كتاب أطباق الولائم بلمسة أيام زمان - دليل شامل لتحضير الأطباق الجزائرية التقليدية">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="الولائم">
+    <meta name="msapplication-TileColor" content="#006233">
+    <title>أطباق الولائم بلمسة أيام زمان</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <link rel="apple-touch-icon" href="icon.svg">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Amiri:wght@400;700&family=Cairo:wght@400;600;700;800&family=Reem+Kufi:wght@400;500;600;700&display=swap');
+        
+        :root {
+            --primary-green: #006233;
+            --secondary-green: #00853f;
+            --accent-red: #D21034;
+            --gold: #C9A227;
+            --cream: #FFF8E7;
+            --dark: #1a1a2e;
+        }
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            line-height: 1.8;
+            color: #fff;
+            direction: rtl;
+            overflow-x: hidden;
+            background: linear-gradient(135deg, #0a0a1a 0%, #1a0a2e 50%, #0a1a2e 100%);
+            min-height: 100vh;
+        }
+        
+        .sidebar {
+            position: fixed;
+            right: 0; top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(180deg, rgba(0,98,51,0.98) 0%, rgba(0,60,30,0.98) 100%);
+            backdrop-filter: blur(20px);
+            border-left: 3px solid var(--gold);
+            z-index: 1000;
+            transform: translateX(100%);
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow-y: auto;
+            box-shadow: -5px 0 30px rgba(0,0,0,0.5);
+        }
+        
+        .sidebar.open { transform: translateX(0); }
+        
+        .sidebar-header {
+            padding: 25px 20px;
+            background: rgba(0,0,0,0.2);
+            border-bottom: 2px solid var(--gold);
+            text-align: center;
+        }
+        
+        .sidebar-header h2 {
+            font-family: 'Reem Kufi', serif;
+            color: var(--gold);
+            font-size: 1.3em;
+        }
+        
+        .menu-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px 25px;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-right: 4px solid transparent;
+            cursor: pointer;
+        }
+        
+        .menu-item:hover, .menu-item.active {
+            background: rgba(201,162,39,0.2);
+            border-right-color: var(--gold);
+        }
+        
+        .menu-item i { color: var(--gold); width: 25px; text-align: center; }
+        
+        .menu-divider {
+            height: 1px;
+            background: rgba(255,255,255,0.1);
+            margin: 10px 20px;
+        }
+        
+        .menu-toggle {
+            position: fixed;
+            top: 20px; right: 20px;
+            width: 55px; height: 55px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border: 3px solid var(--gold);
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1001;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.4);
+        }
+        
+        .menu-toggle span {
+            width: 25px; height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-toggle.active span:nth-child(1) { transform: rotate(45deg) translate(5px, 5px); }
+        .menu-toggle.active span:nth-child(2) { opacity: 0; }
+        .menu-toggle.active span:nth-child(3) { transform: rotate(-45deg) translate(7px, -6px); }
+        
+        .overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.6);
+            z-index: 999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .overlay.show { opacity: 1; visibility: visible; }
+        
+        .main-content {
+            padding: 100px 40px 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .content-section {
+            display: none;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .content-section.active { display: block; }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .cover-section {
+            text-align: center;
+            padding: 40px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 30px;
+            border: 2px solid rgba(201,162,39,0.3);
+            margin-bottom: 50px;
+        }
+        
+        .hero-image {
+            width: 100%;
+            max-width: 900px;
+            height: 400px;
+            margin: 0 auto 40px;
+            border-radius: 20px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5);
+        }
+        
+        .hero-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .hero-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 30px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            text-align: center;
+        }
+        
+        .hero-overlay h1 {
+            font-family: 'Reem Kufi', serif;
+            font-size: 2.5em;
+            color: white;
+            text-shadow: 2px 2px 10px rgba(0,0,0,0.5);
+        }
+        
+        .section-title {
+            font-family: 'Reem Kufi', serif;
+            font-size: 2em;
+            color: var(--gold);
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid rgba(201,162,39,0.3);
+        }
+        
+        .recipe-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(201,162,39,0.2);
+            border-radius: 20px;
+            overflow: hidden;
+            margin: 25px 0;
+            transition: all 0.3s ease;
+        }
+        
+        .recipe-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.3);
+        }
+        
+        .recipe-image {
+            width: 100%;
+            height: 250px;
+            overflow: hidden;
+            position: relative;
+        }
+        
+        .recipe-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+        
+        .recipe-card:hover .recipe-image img {
+            transform: scale(1.1);
+        }
+        
+        .recipe-badge {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: var(--gold);
+            color: var(--dark);
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: 700;
+            font-size: 0.9em;
+        }
+        
+        .recipe-content {
+            padding: 25px;
+        }
+        
+        .recipe-content h3 {
+            font-size: 1.4em;
+            color: var(--gold);
+            margin-bottom: 15px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: rgba(0,0,0,0.2);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+        
+        thead {
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+        }
+        
+        th {
+            padding: 15px;
+            text-align: right;
+            color: white;
+            font-weight: 700;
+        }
+        
+        td {
+            padding: 12px 15px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: rgba(255,255,255,0.9);
+        }
+        
+        tr:hover td { background: rgba(201,162,39,0.1); }
+        
+        .note-box {
+            background: rgba(201,162,39,0.15);
+            border-right: 4px solid var(--gold);
+            padding: 20px;
+            border-radius: 0 15px 15px 0;
+            margin: 20px 0;
+        }
+        
+        .dedication-section {
+            background: rgba(201,162,39,0.1);
+            border: 2px solid var(--gold);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 50px 0;
+            text-align: center;
+        }
+        
+        .dedication-title {
+            font-family: 'Reem Kufi', serif;
+            font-size: 2em;
+            color: var(--gold);
+            margin-bottom: 25px;
+        }
+        
+        .dedication-text {
+            font-size: 1.2em;
+            line-height: 2.2;
+            color: white;
+            font-family: 'Amiri', serif;
+            max-width: 750px;
+            margin: 0 auto;
+        }
+        
+        .dedication-text .highlight { color: var(--gold); font-weight: 700; }
+        
+        .developer-section {
+            margin: 40px 0;
+        }
+        
+        .developer-card {
+            background: linear-gradient(135deg, rgba(0,98,51,0.15), rgba(0,133,63,0.15));
+            border: 2px solid var(--primary-green);
+            border-radius: 25px;
+            padding: 35px;
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+        
+        .developer-icon {
+            width: 90px;
+            height: 90px;
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+        
+        .developer-icon i {
+            font-size: 2.2em;
+            color: white;
+        }
+        
+        .developer-content {
+            text-align: right;
+        }
+        
+        .developer-content h3 {
+            font-family: 'Reem Kufi', serif;
+            color: var(--primary-green);
+            font-size: 1.3em;
+            margin-bottom: 10px;
+        }
+        
+        .developer-content h3 i {
+            margin-left: 10px;
+            color: var(--gold);
+        }
+        
+        .developer-name {
+            font-size: 1.5em;
+            font-weight: 700;
+            color: var(--gold);
+            margin-bottom: 8px;
+        }
+        
+        .developer-prayer {
+            font-family: 'Amiri', serif;
+            font-size: 1.2em;
+            color: rgba(255,255,255,0.9);
+            font-style: italic;
+        }
+        
+        .developer-prayer i {
+            margin-left: 8px;
+            color: var(--gold);
+        }
+        
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-top: 40px;
+            flex-wrap: wrap;
+        }
+        
+        .action-btn {
+            padding: 15px 35px;
+            border: none;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        
+        .action-btn:hover { transform: translateY(-3px); }
+        .btn-pdf { background: linear-gradient(135deg, var(--accent-red), #A00028); color: white; }
+        .btn-download { background: linear-gradient(135deg, var(--gold), #A8841F); color: #1a1a2e; }
+        .btn-share { background: linear-gradient(135deg, var(--secondary-green), var(--primary-green)); color: white; }
+        
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: linear-gradient(135deg, var(--primary-green), var(--secondary-green));
+            color: white;
+            padding: 15px 35px;
+            border-radius: 50px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.4);
+            z-index: 2000;
+            opacity: 0;
+            transition: all 0.4s ease;
+            border: 2px solid var(--gold);
+        }
+        
+        .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(0,0,0,0.8);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 3000;
+        }
+        
+        .modal-overlay.show { display: flex; }
+        
+        .modal {
+            background: linear-gradient(135deg, #1a2e1a, #0a1a2e);
+            padding: 40px;
+            border-radius: 25px;
+            max-width: 450px;
+            width: 90%;
+            text-align: center;
+            border: 2px solid var(--gold);
+        }
+        
+        .modal h3 { color: var(--gold); margin-bottom: 25px; }
+        
+        .share-options {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 25px;
+        }
+        
+        .share-option {
+            width: 60px; height: 60px;
+            border-radius: 50%;
+            border: none;
+            cursor: pointer;
+            font-size: 1.5em;
+            color: white;
+            transition: all 0.3s ease;
+        }
+        
+        .share-option:hover { transform: scale(1.15); }
+        .share-option.whatsapp { background: #25D366; }
+        .share-option.facebook { background: #1877F2; }
+        .share-option.twitter { background: #1DA1F2; }
+        .share-option.email { background: var(--accent-red); }
+        
+        .modal-close {
+            background: rgba(255,255,255,0.1);
+            border: 1px solid rgba(255,255,255,0.2);
+            color: white;
+            padding: 12px 35px;
+            border-radius: 30px;
+            cursor: pointer;
+            font-family: 'Cairo', sans-serif;
+        }
+        
+        ul { padding-right: 25px; }
+        li { margin: 10px 0; }
+        li::marker { color: var(--gold); }
+        
+        @media (max-width: 768px) {
+            .sidebar { width: 100%; }
+            .main-content { padding: 100px 20px 20px; }
+            .hero-image { height: 250px; }
+            .hero-overlay h1 { font-size: 1.5em; }
+            .recipe-image { height: 180px; }
+            .action-buttons { flex-direction: column; align-items: center; }
+            .action-btn { width: 100%; max-width: 280px; justify-content: center; }
+            .developer-card { flex-direction: column; text-align: center; }
+        }
+        
+        @media print {
+            .sidebar, .menu-toggle, .overlay, .action-buttons, .toast, .modal-overlay, .bg {
+                display: none !important;
+            }
+            .main-content { padding: 20px; max-width: 100%; }
+            .content-section { 
+                display: block !important; 
+                background: white !important; 
+                color: #333 !important;
+                page-break-inside: avoid;
+            }
+            table { background: white !important; border: 2px solid #006233 !important; }
+            thead { background: #006233 !important; }
+            th { color: white !important; }
+            td { color: #333 !important; border-bottom: 1px solid #ddd !important; }
+        }
+    </style>
 </head>
 <body>
-  <!-- Overlay -->
-  <div class="overlay" id="overlay" onclick="closeMenu()"></div>
-
-  <!-- Side Menu -->
-  <aside class="side-menu" id="sideMenu">
-    <div class="menu-header">
-      <div class="menu-logo">🍽 أطباق الولائم</div>
-      <div class="menu-subtitle">بلمسة أيام زمان</div>
+    <div class="overlay" id="overlay" onclick="toggleMenu()"></div>
+    
+    <nav class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h2>📖 أطباق الولائم</h2>
+            <p>دليل الطبخ الجزائري</p>
+        </div>
+        <div class="sidebar-menu">
+            <a class="menu-item active" onclick="showSection('home', event)"><i class="fas fa-home"></i><span>الرئيسية</span></a>
+            <a class="menu-item" onclick="showSection('chef-bahoun', event)"><i class="fas fa-user-tie"></i><span>مقادير الشاف بهون</span></a>
+            <div class="menu-divider"></div>
+            <a class="menu-item" onclick="showSection('spices', event)"><i class="fas fa-pepper-hot"></i><span>التوابل</span></a>
+            <a class="menu-item" onclick="showSection('couscous', event)"><i class="fas fa-bowl-food"></i><span>الكسكسي</span></a>
+            <a class="menu-item" onclick="showSection('tagine', event)"><i class="fas fa-fire-burner"></i><span>الطاجين</span></a>
+            <a class="menu-item" onclick="showSection('southern', event)"><i class="fas fa-landmark"></i><span>أطباق الجنوب</span></a>
+            <a class="menu-item" onclick="showSection('desserts', event)"><i class="fas fa-cookie"></i><span>الحلويات</span></a>
+        </div>
+    </nav>
+    
+    <div class="menu-toggle" id="menuToggle" onclick="toggleMenu()">
+        <span></span><span></span><span></span>
     </div>
-    <div class="menu-section">
-      <div class="menu-section-title">الرئيسية</div>
-      <div class="menu-item active" onclick="menuNavigate('home')">
-        <div class="menu-icon">🏠</div>
-        <span class="menu-label">الصفحة الرئيسية</span>
-      </div>
-      <div class="menu-item" onclick="menuNavigate('favorites')">
-        <div class="menu-icon">❤️</div>
-        <span class="menu-label">المفضلة</span>
-      </div>
+    
+    <div class="main-content">
+        <!-- HOME SECTION -->
+        <div class="content-section active" id="home">
+            <div class="cover-section">
+                <div class="hero-image">
+                    <img src="https://images.unsplash.com/photo-1548018560-c7196e4f220b?w=900&h=400&fit=crop" alt="قصبة جزائرية تقليدية">
+                    <div class="hero-overlay">
+                        <h1>أطباق الولائم بلمسة أيام زمان</h1>
+                    </div>
+                </div>
+                
+                <h2>دليل شامل لتحضير أطباق الولائم الجزائرية</h2>
+                
+                <div class="author-info" style="background:rgba(0,0,0,0.2);padding:20px 40px;border-radius:15px;display:inline-block;border:1px solid rgba(201,162,39,0.3);margin-top:20px;">
+                    <p><strong style="color:var(--gold);"><i class="fas fa-user"></i> المؤلف:</strong> السيد بهون بن ح محمد أسماوي (رابيد دوز)</p>
+                    <p><i class="fas fa-calendar"></i> حرر بالعطف يوم: 20 ديسمبر 2022 م</p>
+                </div>
+            </div>
+            
+            <div class="dedication-section">
+                <div class="dedication-title"><i class="fas fa-heart"></i> إهداء <i class="fas fa-heart"></i></div>
+                <div class="dedication-text">
+                    <p>أهدي هذا العمل <span class="highlight">إلى روح والدي</span> الذي علمني حب العطاء والكرم،</p>
+                    <p><span class="highlight">وإلى كل رجال الخفاء</span> في المجتمع الذين يخدمون دون انتظار مقابل،</p>
+                    <p><span class="highlight">وإلى كل من عرفناهم في الطبخ والولائم التطوعية</span> في العشائر والأعراس،</p>
+                    <p>الذين يحملون همّ التحضير والإطعام،</p>
+                    <p>الذين يقومون قبل الفجر ويسهرون ويحضّرون ما يكفي للوليمة بصبر ومحبة،</p>
+                    <p><span class="highlight">كل باسمه</span>... فهم معروفون في المجتمع، ونحن نعرف قيمتهم ونترحم على من فقدناهم ممن سبّلوا أنفسهم لهذه المهمة النبيلة،</p>
+                    <p>جعل الله أعمالهم الخالصة دخراً وثقلاً في ميزان الحسنات.</p>
+                </div>
+            </div>
+            
+            <div class="developer-section">
+                <div class="developer-card">
+                    <div class="developer-icon">
+                        <i class="fas fa-code"></i>
+                    </div>
+                    <div class="developer-content">
+                        <h3><i class="fas fa-laptop-code"></i> التطوير والبرمجة</h3>
+                        <p class="developer-name">حاج اسماعيل ب</p>
+                        <p class="developer-prayer">
+                            <i class="fas fa-hands-praying"></i>
+                            دعائكم الصالح على والدي
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- CHEF BAHOUN SECTION -->
+        <div class="content-section" id="chef-bahoun">
+            <h2 class="section-title"><i class="fas fa-user-tie"></i> مقادير الشاف بهون</h2>
+            
+            <div class="note-box">
+                <strong>المؤلف:</strong> اسماوي بهون بن حاج محمد بن حاج يحي<br>
+                <strong>الوصف:</strong> مكونات ومقادير التوابل والخضر واللحوم (من تجاربي في الولائم والأعراس)<br>
+                <strong>حرر بالعطف يوم:</strong> 20 ديسمبر 2022 م<br>
+                <strong>ملاحظة:</strong> المجموعة المقصودة (تقيميت) تحوي 5 أشخاص
+            </div>
+            
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1596040033229-a9821ebd058d?w=600&h=250&fit=crop" alt="توابل جزائرية">
+                    <div class="recipe-badge">توابل</div>
+                </div>
+                <div class="recipe-content">
+                    <h3><i class="fas fa-mortar-pestle"></i> 1. خلطات التوابل</h3>
+                    
+                    <h4>خلطة توابل الكسكسي والشوربة</h4>
+                    <p><em>ملاحظة: يُستعمل 5 غرام من هذا المكون لكل 1 كغ من اللحم.</em></p>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th></tr></thead>
+                        <tbody>
+                            <tr><td>كوصبر (كزبرة)</td><td>500 غ</td></tr>
+                            <tr><td>حبة حلاوة (يانسون)</td><td>150 غ</td></tr>
+                            <tr><td>قرفة</td><td>150 غ</td></tr>
+                            <tr><td>فلفل أكحل (فلفل أسود)</td><td>50 غ</td></tr>
+                            <tr><td>عود الصفر (كركم)</td><td>50 غ</td></tr>
+                            <tr><td>كروية</td><td>50 غ</td></tr>
+                            <tr><td>لحية الشيخ</td><td>20 غ</td></tr>
+                            <tr><td>زعيترة</td><td>30 غ</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>توابل الطاجين بالثوم</h4>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th></tr></thead>
+                        <tbody>
+                            <tr><td>كمون</td><td>300 غ</td></tr>
+                            <tr><td>كروية</td><td>100 غ</td></tr>
+                            <tr><td>فلفل أكحل</td><td>50 غ</td></tr>
+                            <tr><td>عود الصفر (كركم)</td><td>50 غ</td></tr>
+                            <tr><td>زعيترة</td><td>4 أربط</td></tr>
+                            <tr><td>أوراق الرند (ورق غار)</td><td>5 أوراق</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>توابل طاجين مرقة بيضاء</h4>
+                    <p><em>ملاحظة: يُستعمل 5 غرام من هذا المكون لكل 1 كغ من اللحم.</em></p>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th></tr></thead>
+                        <tbody>
+                            <tr><td>فلفل أكحل</td><td>-</td></tr>
+                            <tr><td>قرفة</td><td>-</td></tr>
+                            <tr><td>عود الصفر</td><td>حسب الرغبة</td></tr>
+                            <tr><td>زعيترة</td><td>حسب الرغبة</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1540420773420-3366772f4999?w=600&h=250&fit=crop" alt="خضراوات طازجة">
+                    <div class="recipe-badge">خضراوات</div>
+                </div>
+                <div class="recipe-content">
+                    <h3><i class="fas fa-carrot"></i> 2. مقادير الخضراوات والحبوب للولائم</h3>
+                    
+                    <h4>مقادير خضراوات الطاجين</h4>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th><th>ملاحظة</th></tr></thead>
+                        <tbody>
+                            <tr><td>لحم بقري</td><td>1 كغ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>لحم غنمي</td><td>800 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>بسباس</td><td>700 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>كرافس</td><td>500 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>ماشطو بالبصل</td><td>400 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>ماشطو بالثوم</td><td>600 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>ملوخية</td><td>300 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>جلبانة كونجلي</td><td>250 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>زيتون بدون نواة</td><td>150 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>مقادير خضروات الكسكسي</h4>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th><th>عدد الأشخاص</th></tr></thead>
+                        <tbody>
+                            <tr><td>بصل</td><td>350 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>جزر</td><td>300 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>بطاطا</td><td>250 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>كورجات (كوسة)</td><td>200 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>بسباس</td><td>200 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>كابويا (يقطين)</td><td>150 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>لفت</td><td>150 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>قرعة في وقتها</td><td>150 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>خرشوف</td><td>150 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>مقادير الحبوب الجافة والعجائن</h4>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th><th>عدد الأشخاص</th></tr></thead>
+                        <tbody>
+                            <tr><td>كسكس (طعام)</td><td>500 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>فريك</td><td>800 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>لوبيا بيضاء</td><td>350 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>عدس</td><td>250 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>أرز</td><td>250 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>محمصة وباقي العجائن</td><td>250 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>فول مقشر خشن</td><td>80 غ</td><td>مجموعة واحدة (تقيميت)</td></tr>
+                            <tr><td>حمص رقم 11</td><td>500 غ</td><td>لـ 20 مجموعة (تقيميت)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1512621776951-a57141f2eefd?w=600&h=250&fit=crop" alt="سلطة جزائرية">
+                    <div class="recipe-badge">سلطة</div>
+                </div>
+                <div class="recipe-content">
+                    <h3><i class="fas fa-leaf"></i> 3. السلطة ولواحقها</h3>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th><th>التغطية</th></tr></thead>
+                        <tbody>
+                            <tr><td>سلاطة</td><td>1 كغ</td><td>3 مجموعات (تقيميت)</td></tr>
+                            <tr><td>طماطم</td><td>1 كغ</td><td>10 مجموعات (تقيميت)</td></tr>
+                            <tr><td>قارص (ليمون)</td><td>1 كغ</td><td>20 مجموعة (تقيميت)</td></tr>
+                            <tr><td>زيتون</td><td>1 كغ</td><td>20 مجموعة (تقيميت)</td></tr>
+                            <tr><td>فلفل مرقد</td><td>1 كغ</td><td>40 مجموعة (تقيميت)</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1603133872878-684f208fb84b?w=600&h=250&fit=crop" alt="شطيطحة الدجاج" onerror="this.src='https://via.placeholder.com/600x250/006233/FFFFFF?text=شطيطحة+الدجاج'">
+                    <div class="recipe-badge">أطباق رئيسية</div>
+                </div>
+                <div class="recipe-content">
+                    <h3><i class="fas fa-utensils"></i> 4. الأطباق الرئيسية للولائم</h3>
+                    
+                    <h4>شطيطحة الدجاج للوليمة</h4>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th></tr></thead>
+                        <tbody>
+                            <tr><td>دجاج</td><td>1.200 كغ</td></tr>
+                            <tr><td>زيتون بدون نواة</td><td>200 غ</td></tr>
+                            <tr><td>حمص مطبوخ رقم 11</td><td>50 غ</td></tr>
+                        </tbody>
+                    </table>
+                    
+                    <h4>شطيطحة اللحم بالكريات</h4>
+                    <table>
+                        <thead><tr><th>المكون</th><th>الكمية</th></tr></thead>
+                        <tbody>
+                            <tr><td>لحم</td><td>800 غ</td></tr>
+                            <tr><td>لحم مرحي</td><td>200 غ</td></tr>
+                            <tr><td>فطر مقطع (شامبيون)</td><td>150 غ</td></tr>
+                            <tr><td>حمص مطبوخ رقم 11</td><td>50 غ</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SPICES SECTION -->
+        <div class="content-section" id="spices">
+            <h2 class="section-title"><i class="fas fa-pepper-hot"></i> تحضير التوابل</h2>
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1532336414038-cf19250c5757?w=600&h=250&fit=crop" alt="توابل متنوعة">
+                </div>
+                <div class="recipe-content">
+                    <h3>خلطات التوابل الأساسية</h3>
+                    <p>التوابل هي الأساس في أي طبق جزائري. يُنصح بتحضيرها مسبقاً وتخزينها في أوعية محكمة.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- COUSCOUS SECTION -->
+        <div class="content-section" id="couscous">
+            <h2 class="section-title"><i class="fas fa-bowl-food"></i> أطباق الكسكسي</h2>
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1585937421612-70a008356fbe?w=600&h=250&fit=crop" alt="كسكسي جزائري">
+                    <div class="recipe-badge">كسكسي</div>
+                </div>
+                <div class="recipe-content">
+                    <h3>أطباق الكسكسي التقليدية</h3>
+                    <p>الكسكسي هو الطبق الوطني الجزائري ويُقدَّم في جميع المناسبات والأفراح.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAGINE SECTION -->
+        <div class="content-section" id="tagine">
+            <h2 class="section-title"><i class="fas fa-fire-burner"></i> أطباق الطاجين</h2>
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1541518763669-27fef04b14ea?w=600&h=250&fit=crop" alt="طاجين جزائري">
+                    <div class="recipe-badge">طاجين</div>
+                </div>
+                <div class="recipe-content">
+                    <h3>أطباق الطاجين المغربي</h3>
+                    <p>الطاجين من أشهر الأطباق في المطبخ الجزائري والمغاربي.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- SOUTHERN SECTION -->
+        <div class="content-section" id="southern">
+            <h2 class="section-title"><i class="fas fa-landmark"></i> أطباق الجنوب الجزائري</h2>
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?w=600&h=250&fit=crop" alt="طبخ صحراوي">
+                    <div class="recipe-badge">الجنوب</div>
+                </div>
+                <div class="recipe-content">
+                    <h3>أطباق الصحراء الجزائرية</h3>
+                    <p>أطباق تقليدية من جنوب الجزائر تتميز بنكهاتها القوية وب鲲 بسيطة.</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- DESSERTS SECTION -->
+        <div class="content-section" id="desserts">
+            <h2 class="section-title"><i class="fas fa-cookie"></i> الحلويات الشعبية</h2>
+            <div class="recipe-card">
+                <div class="recipe-image">
+                    <img src="https://images.unsplash.com/photo-1558961363-fa8fdf82db35?w=600&h=250&fit=crop" alt="حلويات جزائرية">
+                    <div class="recipe-badge">حلويات</div>
+                </div>
+                <div class="recipe-content">
+                    <h3>حلويات تقليدية</h3>
+                    <p>الحلويات الجزائرية تتميز بتنوعها واستخدام السميد والعسل والمكسرات.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="action-buttons">
+            <button class="action-btn btn-pdf" onclick="generatePDF()"><i class="fas fa-file-pdf"></i> حفظ كـ PDF</button>
+            <button class="action-btn btn-download" onclick="downloadFile()"><i class="fas fa-download"></i> تنزيل</button>
+            <button class="action-btn btn-share" onclick="openShareModal()"><i class="fas fa-share-alt"></i> مشاركة</button>
+        </div>
     </div>
-    <div class="menu-section">
-      <div class="menu-section-title">الأقسام</div>
-      <div class="menu-item" onclick="menuChapter(1)">
-        <div class="menu-icon">🥗</div>
-        <span class="menu-label">السلطة ولواحقها</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(2)">
-        <div class="menu-icon">🧁</div>
-        <span class="menu-label">الحلويات التقليدية</span>
-      </div>
-      <div class="menu-item" onclick="menuChapter(3)">
-        <div class="menu-icon">☕</div>
-        <span class="menu-label">المشروبات التقليدية</span>
-      </div>
+    
+    <div class="toast" id="toast"></div>
+    
+    <div class="modal-overlay" id="shareModal">
+        <div class="modal">
+            <h3><i class="fas fa-share-alt"></i> مشاركة الكتاب</h3>
+            <div class="share-options">
+                <button class="share-option whatsapp" onclick="shareWhatsApp()"><i class="fab fa-whatsapp"></i></button>
+                <button class="share-option facebook" onclick="shareFacebook()"><i class="fab fa-facebook-f"></i></button>
+                <button class="share-option twitter" onclick="shareTwitter()"><i class="fab fa-twitter"></i></button>
+                <button class="share-option email" onclick="shareEmail()"><i class="fas fa-envelope"></i></button>
+            </div>
+            <button class="modal-close" onclick="closeShareModal()">إغلاق</button>
+        </div>
     </div>
-    <div class="menu-section">
-      <div class="menu-section-title">أخرى</div>
-      <div class="menu-item" onclick="menuNavigate('about')">
-        <div class="menu-icon">📖</div>
-        <span class="menu-label">عن الكتاب</span>
-      </div>
-      <div class="menu-item" onclick="menuShare()">
-        <div class="menu-icon">📤</div>
-        <span class="menu-label">مشاركة التطبيق</span>
-      </div>
-      <div class="menu-item" onclick="menuInstall()">
-        <div class="menu-icon">📥</div>
-        <span class="menu-label">تنزيل التطبيق</span>
-      </div>
-    </div>
-    <div class="menu-footer">
-      <p>المؤلف: السيد بهون بن ح محمد أسماوي</p>
-      <p>جميع المقادير تُقدم للمجموعات (تقيميت)</p>
-    </div>
-  </aside>
-
-  <!-- Header -->
-  <header class="header">
-    <div class="header-content">
-      <button class="menu-toggle" onclick="openMenu()">☰</button>
-      <div class="logo">🍽 أطباق الولائم</div>
-      <div class="header-actions">
-        <button class="header-btn" onclick="menuShare()">📤</button>
-        <button class="header-btn" onclick="menuInstall()">📥</button>
-      </div>
-    </div>
-  </header>
-
-  <!-- Search -->
-  <div class="search-container">
-    <input type="text" class="search-box" placeholder="🔍 ابحث عن طبق أو مكون..." id="searchInput" oninput="filterRecipes()">
-  </div>
-
-  <!-- Categories -->
-  <div class="categories" id="categories">
-    <button class="category-btn active" onclick="filterByCategory('all')">الكل</button>
-    <button class="category-btn" onclick="filterByCategory('salad')">🥗 السلطة</button>
-    <button class="category-btn" onclick="filterByCategory('sweets')">🧁 الحلويات</button>
-    <button class="category-btn" onclick="filterByCategory('drinks')">☕ المشروبات</button>
-  </div>
-
-  <!-- Content -->
-  <main class="content" id="mainContent"></main>
-
-  <!-- Bottom Nav -->
-  <nav class="bottom-nav">
-    <div class="nav-item active" onclick="navSection('home')">
-      <span class="nav-icon">🏠</span>
-      <span class="nav-label">الرئيسية</span>
-    </div>
-    <div class="nav-item" onclick="navSection('chapters')">
-      <span class="nav-icon">📚</span>
-      <span class="nav-label">الأقسام</span>
-    </div>
-    <div class="nav-item" onclick="navSection('favorites')">
-      <span class="nav-icon">❤️</span>
-      <span class="nav-label">المفضلة</span>
-    </div>
-    <div class="nav-item" onclick="navSection('about')">
-      <span class="nav-icon">📖</span>
-      <span class="nav-label">عن الكتاب</span>
-    </div>
-  </nav>
-
-  <!-- Install Banner -->
-  <div class="install-banner" id="installBanner">
-    <div class="install-content">
-      <span class="install-icon">📱</span>
-      <div class="install-text">
-        <div class="install-title">تنزيل التطبيق</div>
-        <div class="install-subtitle">أضف التطبيق إلى شاشة هاتفك</div>
-      </div>
-      <button class="install-btn" onclick="installApp()">تنزيل</button>
-      <button class="install-close" onclick="closeInstallBanner()">×</button>
-    </div>
-  </div>
-
-  <!-- Install Guide Modal -->
-  <div class="modal" id="installModal">
-    <div style="background:white;border-radius:20px;padding:30px;max-width:350px;text-align:center;">
-      <div style="font-size:60px;margin-bottom:15px;">📱</div>
-      <h3 style="color:var(--primary);margin-bottom:15px;">تنزيل التطبيق</h3>
-      <div id="installInstructions" style="text-align:right;line-height:2;font-size:14px;"></div>
-      <button onclick="document.getElementById('installModal').classList.remove('active')" 
-              style="margin-top:20px;padding:12px 30px;background:var(--primary);color:white;border:none;border-radius:10px;font-family:'Cairo',sans-serif;font-weight:700;cursor:pointer;">
-        حسناً
-      </button>
-    </div>
-  </div>
-
-  <!-- Modal -->
-  <div class="modal" id="imageModal">
-    <button class="modal-close" onclick="closeModal()">×</button>
-    <img id="modalImage" src="" alt="">
-  </div>
-
-  <!-- Toast -->
-  <div class="toast" id="toast"></div>
-
-  <script src="data.js"></script>
-  <script src="app.js"></script>
+    
+    <script>
+        function toggleMenu() {
+            document.getElementById('sidebar').classList.toggle('open');
+            document.getElementById('overlay').classList.toggle('show');
+            document.getElementById('menuToggle').classList.toggle('active');
+        }
+        
+        function showSection(id, event) {
+            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+            document.querySelectorAll('.menu-item').forEach(i => i.classList.remove('active'));
+            if (event && event.currentTarget) {
+                event.currentTarget.classList.add('active');
+            }
+            if (window.innerWidth <= 768) toggleMenu();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+        
+        function generatePDF() {
+            showToast('جاري تحضير ملف PDF...');
+            document.querySelectorAll('.content-section').forEach(s => {
+                s.style.display = 'block';
+                s.style.background = 'white';
+                s.style.color = '#333';
+            });
+            html2pdf().set({
+                margin: [20, 15, 20, 15],
+                filename: 'أطباق_الولائم_بلمسة_أيام_زمان.pdf',
+                image: { type: 'jpeg', quality: 0.98 },
+                html2canvas: { scale: 3, useCORS: true, letterRendering: true },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            }).from(document.querySelector('.main-content')).save().then(() => {
+                document.querySelectorAll('.content-section').forEach(s => {
+                    s.style.display = '';
+                    s.style.background = '';
+                    s.style.color = '';
+                });
+                showToast('تم الحفظ!');
+            });
+        }
+        
+        function downloadFile() {
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(new Blob([document.documentElement.outerHTML], { type: 'text/html;charset=utf-8' }));
+            a.download = 'أطباق_الولائم.html';
+            a.click();
+            showToast('تم التنزيل!');
+        }
+        
+        function openShareModal() { document.getElementById('shareModal').classList.add('show'); }
+        function closeShareModal() { document.getElementById('shareModal').classList.remove('show'); }
+        function shareWhatsApp() { window.open('https://wa.me/?text=' + encodeURIComponent('كتاب أطباق الولائم - أطباق الولائم بلمسة أيام زمان')); closeShareModal(); }
+        function shareFacebook() { window.open('https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(location.href)); closeShareModal(); }
+        function shareTwitter() { window.open('https://twitter.com/intent/tweet?text=' + encodeURIComponent('كتاب أطباق الولائم - أطباق الولائم بلمسة أيام زمان')); closeShareModal(); }
+        function shareEmail() { window.location.href = 'mailto:?subject=' + encodeURIComponent('كتاب أطباق الولائم') + '&body=' + encodeURIComponent('كتاب أطباق الولائم بلمسة أيام زمان\n\n' + location.href); closeShareModal(); }
+        function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
+        document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
+        
+        // PWA
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js').catch(() => {});
+        }
+    </script>
 </body>
 </html>

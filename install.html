@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#006233">
+    <title>تحميل تطبيق أطباق الولائم</title>
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" type="image/svg+xml" href="icon.svg">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;800&display=swap');
+        
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Cairo', sans-serif;
+            background: linear-gradient(135deg, #006233 0%, #00853f 50%, #006233 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .container {
+            background: white;
+            border-radius: 30px;
+            padding: 40px;
+            max-width: 500px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            text-align: center;
+        }
+        
+        .app-icon {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #006233, #00853f);
+            border-radius: 30px;
+            margin: 0 auto 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 60px;
+            box-shadow: 0 10px 30px rgba(0,98,51,0.3);
+        }
+        
+        h1 {
+            color: #006233;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1em;
+        }
+        
+        .install-section {
+            margin: 30px 0;
+        }
+        
+        .install-btn {
+            display: block;
+            width: 100%;
+            padding: 18px;
+            margin: 15px 0;
+            border: none;
+            border-radius: 15px;
+            font-family: 'Cairo', sans-serif;
+            font-size: 1.1em;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .install-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+        
+        .btn-pwa {
+            background: linear-gradient(135deg, #006233, #00853f);
+            color: white;
+        }
+        
+        .btn-chrome {
+            background: #4285F4;
+            color: white;
+        }
+        
+        .btn-safari {
+            background: #007AFF;
+            color: white;
+        }
+        
+        .instructions {
+            margin-top: 30px;
+            text-align: right;
+        }
+        
+        .instructions h3 {
+            color: #006233;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+        
+        .instruction-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            padding: 15px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .step-number {
+            width: 35px;
+            height: 35px;
+            background: #006233;
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        .step-content {
+            flex: 1;
+        }
+        
+        .step-content strong {
+            color: #333;
+            display: block;
+            margin-bottom: 5px;
+        }
+        
+        .step-content span {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .features {
+            margin-top: 30px;
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 20px;
+        }
+        
+        .features h3 {
+            color: #006233;
+            margin-bottom: 15px;
+        }
+        
+        .feature-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.9em;
+            color: #333;
+        }
+        
+        .feature-item i {
+            color: #006233;
+        }
+        
+        .footer {
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+            color: #666;
+            font-size: 0.85em;
+        }
+        
+        .footer strong {
+            color: #006233;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 25px;
+            }
+            .feature-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="app-icon">🍽️</div>
+        <h1>أطباق الولائم</h1>
+        <p class="subtitle">بلمسة أيام زمان - تطبيق مجاني</p>
+        
+        <div class="install-section">
+            <button class="install-btn btn-pwa" id="installBtn" onclick="installApp()">
+                <i class="fas fa-download"></i>
+                تثبيت التطبيق على جهازك
+            </button>
+            
+            <button class="install-btn btn-chrome" onclick="showInstructions('chrome')">
+                <i class="fab fa-chrome"></i>
+                التثبيت عبر Chrome
+            </button>
+            
+            <button class="install-btn btn-safari" onclick="showInstructions('safari')">
+                <i class="fab fa-safari"></i>
+                التثبيت عبر Safari
+            </button>
+        </div>
+        
+        <div class="instructions" id="instructions" style="display: none;">
+            <h3>خطوات التثبيت</h3>
+            <div id="instructionSteps"></div>
+        </div>
+        
+        <div class="features">
+            <h3>✨ مميزات التطبيق</h3>
+            <div class="feature-grid">
+                <div class="feature-item">
+                    <i class="fas fa-wifi-slash"></i>
+                    <span>يعمل بدون إنترنت</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-bolt"></i>
+                    <span>سريع وخفيف</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-book"></i>
+                    <span>+500 وصفة</span>
+                </div>
+                <div class="feature-item">
+                    <i class="fas fa-share-alt"></i>
+                    <span>مشاركة سهلة</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            <p>ال مؤلف: <strong>السيد بهون بن ح محمد أسماوي</strong></p>
+            <p>التطوير: <strong>حاج اسماعيل ب</strong></p>
+        </div>
+    </div>
+    
+    <script>
+        let deferredPrompt;
+        
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            document.getElementById('installBtn').style.display = 'flex';
+        });
+        
+        function installApp() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        alert('تم تثبيت التطبيق بنجاح!');
+                    }
+                    deferredPrompt = null;
+                });
+            } else {
+                showInstructions('manual');
+            }
+        }
+        
+        function showInstructions(browser) {
+            const container = document.getElementById('instructions');
+            const steps = document.getElementById('instructionSteps');
+            container.style.display = 'block';
+            
+            let html = '';
+            
+            if (browser === 'chrome') {
+                html = `
+                    <div class="instruction-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>افتح التطبيق في Chrome</strong>
+                            <span>تأكد من فتح صفحة التثبيت في متصفح Chrome</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>اضغط على النقاط الثلاث</strong>
+                            <span>الزر في أعلى يمين الشاشة</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>اختر "تثبيت التطبيق"</strong>
+                            <span>أو "Install app" من القائمة</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>اضغط "تثبيت"</strong>
+                            <span>سيظهر التطبيق على شاشتك الرئيسية</span>
+                        </div>
+                    </div>
+                `;
+            } else if (browser === 'safari') {
+                html = `
+                    <div class="instruction-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>افتح التطبيق في Safari</strong>
+                            <span>على جهاز iPhone أو iPad</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>اضغط زر المشاركة</strong>
+                            <span>الزر في أسفل الشاشة</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>اختر "إضافة إلى الصفحة الرئيسية"</strong>
+                            <span>أو "Add to Home Screen"</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <strong>اضغط "إضافة"</strong>
+                            <span>سيظهر التطبيق على شاشتك الرئيسية</span>
+                        </div>
+                    </div>
+                `;
+            } else {
+                html = `
+                    <div class="instruction-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <strong>افتح هذا الرابط في متصفحك</strong>
+                            <span>في جهازك المحمول</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <strong>من قائمة المتصفح</strong>
+                            <span>اختر "إضافة إلى الشاشة الرئيسية"</span>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <strong>أكد التثبيت</strong>
+                            <span>وسيظهر التطبيق على جهازك</span>
+                        </div>
+                    </div>
+                `;
+            }
+            
+            steps.innerHTML = html;
+        }
+        
+        // Register Service Worker
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.register('sw.js')
+                .then(reg => console.log('Service Worker registered'))
+                .catch(err => console.log('SW error:', err));
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</body>
+</html>
