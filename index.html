@@ -599,7 +599,7 @@
         <div class="content-section active" id="home">
             <div class="cover-section">
                 <div class="hero-image">
-                    <img src="https://images.unsplash.com/photo-1548018560-c7196e4f220b?w=900&h=400&fit=crop" alt="قصبة جزائرية تقليدية" onerror="this.style.display='none';document.getElementById('heroPlaceholder').style.display='flex';">
+                    <img id="heroImg" src="" alt="قصبة جزائرية تقليدية" onerror="this.style.display='none';document.getElementById('heroPlaceholder').style.display='flex';">
                     <div class="hero-image-placeholder" id="heroPlaceholder" style="display:none;">
                         <div class="buildings">
                             <div class="building" style="width:40px;height:80px;"></div>
@@ -979,6 +979,14 @@
         function showToast(msg) { const t = document.getElementById('toast'); t.textContent = msg; t.classList.add('show'); setTimeout(() => t.classList.remove('show'), 3000); }
         document.getElementById('shareModal').addEventListener('click', function(e) { if (e.target === this) closeShareModal(); });
         
+        // Load hero image as base64
+        fetch('image_b64.txt').then(r => r.text()).then(b64 => {
+            document.getElementById('heroImg').src = 'data:image/jpeg;base64,' + b64.trim();
+        }).catch(() => {
+            document.getElementById('heroImg').style.display = 'none';
+            document.getElementById('heroPlaceholder').style.display = 'flex';
+        });
+
         // PWA
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('sw.js').catch(() => {});
